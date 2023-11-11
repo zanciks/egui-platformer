@@ -37,7 +37,6 @@ impl Level {
         match level_index {
             0 => Self::default(),
             _ => Self::default(), // if number isn't known, we use debug level
-
         }
     }
 }
