@@ -1,6 +1,7 @@
 mod game;
 mod objects;
 mod player;
+mod level;
 
 fn main() -> Result<(), eframe::Error> {
     run_app()

@@ -1,5 +1,3 @@
-#[allow(dead_code)]
-
 use eframe::egui::{Pos2, Rect, Vec2};
 use eframe::egui::{Context, Key, Ui, Rounding, Color32};
 
@@ -19,6 +17,8 @@ pub struct Player {
     gravity: f32,
     jump_strength: f32,
     is_on_ground: bool,
+    //debug options
+    keep_in_window: bool,
 }
 
 impl Default for Player {
@@ -35,13 +35,15 @@ impl Default for Player {
             gravity: 1024.0,
             jump_strength: 512.0,
             is_on_ground: false,
+
+            keep_in_window: true,
         }
     }
 }
 
 impl Player { // TODO : MOVE UPDATE AND DRAW TO ENTITY TRAIT ONCE ADDED
     pub fn update(&mut self, ctx: &Context, delta_time: f32, objects: &Vec<Box<dyn Object>>) { // this function calls all player-functions which don't require ui
-        // self.keep_inside_window(ctx);
+        if self.keep_in_window{self.keep_inside_window(ctx)}
 
         self.horizontal_movement(ctx, delta_time);
         self.vertical_movement(ctx, delta_time);
@@ -51,9 +53,6 @@ impl Player { // TODO : MOVE UPDATE AND DRAW TO ENTITY TRAIT ONCE ADDED
     pub fn draw(&self, ui: &mut Ui) {
         let rect = Rect::from_min_size(self.position, Vec2::splat(25.0));
         ui.painter().rect_filled(rect, Rounding::default(), Color32::WHITE);
-        println!("{:.5}", self.velocity.x);
-        println!("{:.5}", self.velocity.y);
-
     }
     fn horizontal_movement(&mut self, ctx: &Context, delta_time: f32) {
         ctx.input(|input| {
@@ -71,7 +70,6 @@ impl Player { // TODO : MOVE UPDATE AND DRAW TO ENTITY TRAIT ONCE ADDED
             if input.key_pressed(Key::Space) && self.is_on_ground {
                 self.velocity.y -= self.jump_strength;
                 self.is_on_ground = false;
-                self.can_double_jump = true;
             }
         });
 

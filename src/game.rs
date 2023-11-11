@@ -1,25 +1,21 @@
 use std::time::{Instant, Duration};
 use eframe::{App, Frame};
-use eframe::egui::{self, Context};
+use eframe::egui::Context;
 
-use crate::player::Player;
-use crate::objects::Object;
-use crate::objects::wall::Wall;
+use crate::level::Level;
 
 static mut PREVIOUS_TIME: Option<Instant> = None;
 
 pub struct Game {
     delta_time: f32,
-    player: Player,
-    objects: Vec<Box<dyn Object>>
+    level: Level
 }
 
 impl Default for Game {
     fn default() -> Self {
         Game {
             delta_time: 0.0,
-            player: Player::default(),
-            objects: Wall::debug_level(),
+            level: Level::default(),
         }
     }
 }
@@ -28,17 +24,7 @@ impl App for Game {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
         // Updates which don't require ui
         self.calculate_delta_time();
-        self.player.update(ctx, self.delta_time, &self.objects);
-
-        // Updates which require ui (drawing/displaying)
-        egui::CentralPanel::default().show(ctx, |ui| {
-            // ui.label(format!("{}", self.player.velocity.x));
-            ui.label(format!("FPS: {:.1}", 1.0 / self.delta_time));
-            self.player.draw(ui);
-            for object in &self.objects {
-                object.draw(ui);
-            }
-        });
+        self.level.update(ctx, self.delta_time);
 
         ctx.request_repaint(); // simply starting the next frame without any input
     }
